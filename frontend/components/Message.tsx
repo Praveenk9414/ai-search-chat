@@ -1,6 +1,14 @@
 import { Sparkles, CheckCircle, ChevronDown, FileText } from 'lucide-react';
 import { useState } from 'react';
 import type { Citation, ToolEvent } from './Chat';
+import ReactMarkdown from "react-markdown";
+
+function normalizeMarkdown(text: string) {
+  return text.replace(
+    /(### .+?)\s+-/g,
+    "$1\n-"
+  );
+}
 
 type MessageProps = {
   role: "user" | "assistant";
@@ -70,32 +78,51 @@ export default function Message({
         <span className="text-xl font-bold text-gray-900">Answer</span>
       </div>
 
-      {/* Answer text with inline citations */}
-      <div className="text-gray-900 leading-relaxed text-[15px] mb-6">
-        {(() => {
-          // Replace citation markers like [1], [2], [3] with clickable badges
-          const parts = text.split(/(\[\d+\])/g);
+      {/* Answer text with markdown + inline citations */}
+       <div className="text-gray-900 leading-relaxed text-[15px] mb-6 prose prose-sm max-w-none">
+          <ReactMarkdown
+            components={{
+              p: ({ children }) => <p className="mb-4">{children}</p>,
+              li: ({ children }) => <li className="ml-4 list-disc">{children}</li>,
+              h3: ({ children }) => (
+                <h3 className="text-lg font-semibold mt-6 mb-2">{children}</h3>
+              ),
+              a: ({ children }) => <span>{children}</span>,
+              text: ({ children }) => {
+                if (typeof children !== "string") return <>{children}</>;
 
-          return parts.map((part, partIdx) => {
-            const match = part.match(/\[(\d+)\]/);
-            if (match) {
-              const citationNum = parseInt(match[1]);
-              const citation = citations.find(c => c.id === citationNum);
+                const parts = children.split(/(\[\d+\])/g);
 
-              return (
-                <button
-                  key={partIdx}
-                  onClick={() => citation && onCitationClick?.(citation)}
-                  className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-xs font-semibold text-blue-600 bg-blue-50 border border-blue-200 rounded hover:bg-blue-100 transition-colors mx-0.5 align-baseline"
-                >
-                  {citationNum}
-                </button>
-              );
-            }
-            return <span key={partIdx}>{part}</span>;
-          });
-        })()}
-      </div>
+                return (
+                  <>
+                    {parts.map((part, i) => {
+                      const match = part.match(/\[(\d+)\]/);
+                      if (match) {
+                        const citation = citations.find(
+                          (c) => c.id === Number(match[1])
+                        );
+
+                        return (
+                          <button
+                            key={i}
+                            onClick={() => citation && onCitationClick?.(citation)}
+                            className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-xs font-semibold text-blue-600 bg-blue-50 border border-blue-200 rounded hover:bg-blue-100 mx-0.5 align-baseline"
+                          >
+                            {match[1]}
+                          </button>
+                        );
+                      }
+                      return <span key={i}>{part}</span>;
+                    })}
+                  </>
+                );
+              },
+            }}
+        >
+    {normalizeMarkdown(text)}
+  </ReactMarkdown>
+</div>
+
 
       {/* Sources section */}
       {citations.length > 0 && (
