@@ -1,6 +1,6 @@
 
-```md
-# 📄 AI Search Chat (Perplexity-style RAG System)
+
+📄 AI Search Chat (Perplexity-style RAG System)
 
 A full-stack AI application that allows users to **upload PDFs**, ask natural language questions, and receive **streamed AI responses with inline citations**. Clicking on a citation opens a **PDF viewer** that automatically navigates to and highlights the referenced section.
 
@@ -12,11 +12,11 @@ The system is inspired by **Perplexity AI** and demonstrates **Retrieval-Augment
 
 - 📄 Upload PDFs dynamically from the frontend
 - 🔍 Semantic search over PDF content (RAG)
-- 💬 Perplexity-style chat interface
-- ⚡ Real-time streaming responses using SSE
-- 🧠 Tool call indicators (e.g. *Searching documents…*)
-- 🔢 Inline numbered citations `[1] [2] [3]`
-- 📚 Source cards below responses
+-  Perplexity-style chat interface
+-  Real-time streaming responses using SSE
+-  Tool call indicators (e.g. *Searching documents…*)
+-  Inline numbered citations `[1] [2] [3]`
+-  Source cards below responses
 - 📖 PDF Viewer with:
   - Smooth slide-in animation
   - Auto-navigation to cited page
@@ -46,30 +46,37 @@ The system is inspired by **Perplexity AI** and demonstrates **Retrieval-Augment
 - **Ollama** (local LLM inference)
 
 ---
-
+```
 ## 🏗 Architecture Overview
 
+┌────────────┐
+│    User    │
+└─────┬──────┘
+      │
+      ▼
+┌──────────────────────────┐
+│        Frontend          │
+│        (Next.js)         │
+│──────────────────────────│
+│ • Chat Interface         │
+│ • PDF Upload (+ button)  │
+│ • Streaming Responses    │
+│ • PDF Viewer + Highlight │
+└─────┬────────────────────┘
+      │  HTTP / SSE
+      ▼
+┌──────────────────────────┐
+│         Backend          │
+│        (FastAPI)         │
+│──────────────────────────│
+│ • PDF Upload API         │
+│ • Text Extraction        │
+│ • Chunking               │
+│ • Embeddings             │
+│ • Vector Store (FAISS)   │
+│ • LLM Answer Generator   │
+└──────────────────────────┘
 ```
-
-┌──────────────┐
-│  Frontend    │  (Next.js)
-│              │
-│  Chat UI     │──▶ /chat/stream (SSE)
-│  PDF Upload  │──▶ /upload/pdf
-│  PDF Viewer  │──▶ /pdf/{filename}
-└──────┬───────┘
-│
-▼
-┌──────────────┐
-│  Backend     │  (FastAPI)
-│              │
-│  PDF Ingest  │──▶ Chunking
-│  Embeddings  │──▶ FAISS Vector Store
-│  Retriever  │──▶ Top-K Context
-│  LLM Stream │──▶ Token Streaming
-└──────────────┘
-
-````
 
 ---
 
@@ -158,53 +165,6 @@ OLLAMA_BASE_URL=http://localhost:11434
 ```
 
 > No API keys are required — the system runs fully locally.
-
----
-
-## 🖼 Screenshots / GIFs
-
-Create a folder:
-
-```
-/screenshots
-```
-
-Add the following files:
-
-### 1️⃣ Tool Call Streaming
-
-```
-screenshots/tool-streaming.gif
-```
-
-Shows:
-
-* “Searching documents…”
-* Live token streaming
-
-### 2️⃣ Generative UI Rendering
-
-```
-screenshots/generative-ui.png
-```
-
-Shows:
-
-* Inline citations
-* Source cards
-* Clean chat UI
-
-### 3️⃣ Citation → PDF Viewer Transition
-
-```
-screenshots/citation-to-pdf.gif
-```
-
-Shows:
-
-* Clicking `[1]`
-* PDF viewer sliding in
-* Highlighted text
 
 ---
 
