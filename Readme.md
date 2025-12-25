@@ -1,10 +1,15 @@
 
 
-📄 AI Search Chat (Perplexity-style RAG System)
+## 📄 AI Search Chat (Perplexity-style RAG System)
 
 A full-stack AI application that allows users to **upload PDFs**, ask natural language questions, and receive **streamed AI responses with inline citations**. Clicking on a citation opens a **PDF viewer** that automatically navigates to and highlights the referenced section.
 
 The system is inspired by **Perplexity AI** and demonstrates **Retrieval-Augmented Generation (RAG)** with a **Generative UI**.
+
+---
+
+## Displayed on Youtube -> 
+      https://www.youtube.com/watch?v=DW-WC5O2Ir4
 
 ---
 
